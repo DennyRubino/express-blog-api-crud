@@ -3,33 +3,54 @@ const router = express.Router();
 const posts = require("../data/data");
 
 // index
-router.get("/", function (req, res) {
+router.get("/", (req, res) => {
   res.json(posts);
 });
 
 // show
 router.get("/:id", (req, res) => {
   const post = posts.find((p) => p.id === parseInt(req.params.id));
-  if (post) {
-    res.json(post);
-  } else {
-    res.status(404);
-  }
+  if (!post) return res.status(404).json();
+  res.json(post);
 });
 
 // store
-router.post("/", function (req, res) {
-  res.send("Creazione nuovo Post");
+router.post("/", (req, res) => {
+  const { title, content, image, tags } = req.body;
+  if (!title || !content || !tags) {
+    return res.status(400).json();
+  }
+
+  const newPost = {
+    id: posts.length + 1,
+    title,
+    content,
+    image: "/imgs/posts/default.avif",
+    tags,
+  };
+
+  posts.push(newPost);
+  res.status(201).json(newPost);
 });
 
-// update
-router.put("/:id", function (req, res) {
-  res.send("Modifica integrale del Post " + req.params.id);
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, content, image, tags } = req.body;
+
+  const postIndex = posts.findIndex((p) => p.id === parseInt(id));
+  if (postIndex === -1) return res.status(404).json();
+
+  res.json(posts);
 });
 
-// destroy
-router.delete("/:id", function (req, res) {
-  res.send("Eliminazione del Post " + req.params.id);
+//destroy
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+  const postIndex = posts.findIndex((p) => p.id === parseInt(id));
+  if (postIndex === -1) return res.status(404).json();
+
+  const deletedPost = posts.splice(postIndex, 1);
+  res.json(deletedPost);
 });
 
 module.exports = router;

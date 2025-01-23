@@ -4,11 +4,12 @@ const port = 3000;
 const postsRouter = require("./controllers/controllerPosts");
 const posts = require("./data/data");
 
+app.use(express.json());
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
   res.json(posts);
 });
-
-app.use(express.static("public"));
 
 app.use("/posts", postsRouter);
 
@@ -59,5 +60,5 @@ app.get("/bacheca", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App in ascolto sulla porta ${port}`);
 });
